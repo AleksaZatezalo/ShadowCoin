@@ -134,3 +134,49 @@ void shd_blockchain_destroy(shd_blockchain_t *bc){
     free(bc);
 }
 
+shd_result_t shd_blockchain_init_genesis(shd_blockchain_t *bc){
+    if (!bc) return SHD_ERROR_INVALID_ARGUMENT;
+    
+    if (bc->height > 0) {
+        shd_log_error("blockchain: genesis already exists");
+        return SHD_ERROR_GENERIC;
+    }
+
+     /* Create genesis block */
+    shd_block_t *genesis = calloc(1, sizeof(shd_block_t));
+    if (!genesis) return SHD_ERROR_OUT_OF_MEMORY;
+    
+    /* Fill genesis header */
+    genesis->header.version = 1;
+    genesis->header.height = 0;
+    genesis->header.timestamp = GENESIS_TIMESTAMP;
+    memcpy(genesis->header.prev_hash, GENESIS_PREV_HASH, SHD_HASH_SIZE);
+    genesis->header.nonce = 0;
+    genesis->header.difficulty = INITIAL_DIFFICULTY;
+    
+    /* Calculate genesis hash */
+    shd_block_calculate_hash(&genesis->header, genesis->hash);
+    
+    /* Create genesis coinbase transaction */
+    genesis->miner_tx = calloc(1, sizeof(shd_transaction_t));
+    if (!genesis->miner_tx) {
+        free(genesis);
+        return SHD_ERROR_OUT_OF_MEMORY;
+    }
+    
+    /* Genesis has no other transactions */
+    genesis->transactions = NULL;
+    genesis->tx_count = 0;
+    
+    /* Add genesis block */
+    shd_result_t result = apply_block(bc, genesis);
+    if (result != SHD_OK) {
+        shd_block_free(genesis);
+        return result;
+    }
+    
+    shd_log_info("blockchain: genesis block created");
+    shd_block_free(genesis);
+    
+    return SHD_OK;
+}
