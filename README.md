@@ -103,8 +103,11 @@ Start the daemon to participate in the network:
 ### Wallet Operations
 
 ```bash
-# Create new wallet
+# Create new wallet (generates 24-word seed phrase)
 ./shadowcoind createwallet
+
+# Recover wallet from seed phrase
+./shadowcoind recoverwallet
 
 # Get wallet address
 ./shadowcoind getaddress
@@ -261,7 +264,7 @@ curl --user user:pass --data-binary '{"jsonrpc":"1.0","id":"1","method":"getbloc
 ```
 ~/.shadowcoin/
 ├── shadowcoin.conf       # Configuration file
-├── wallet.dat            # Encrypted wallet
+├── wallet.dat            # Encrypted wallet (derived from seed)
 ├── peers.dat             # Known peers
 ├── data/
 │   ├── blocks/           # Block data
@@ -269,6 +272,8 @@ curl --user user:pass --data-binary '{"jsonrpc":"1.0","id":"1","method":"getbloc
 │   └── index/            # Transaction index
 └── debug.log             # Log file
 ```
+
+**Important**: Your 24-word seed phrase is shown only once during wallet creation. Write it down and store it securely offline. The seed phrase can recover your wallet even if `wallet.dat` is lost or corrupted.
 
 ## Contributing
 
