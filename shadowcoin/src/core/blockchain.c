@@ -111,3 +111,26 @@ shd_blockchain_t* shd_blockchain_create(const char *data_dir){
     shd_log_info("blockchain: created at height %lu", bc->height);
     return bc;
 }
+
+void shd_blockchain_destroy(shd_blockchain_t *bc){
+    if (!bc) return;
+
+    /* Free cached blocks */
+    for (size_t i = 0; i < bc->cache.count; i++){
+        shd_block_free(bc->cache.blocks[i]);
+    }
+    free(bc->cache.blocks);
+
+    /* Free alternative chains */
+    for (size_t i = 0; i < bc->alt_chains.count; i++){
+        shd_block_free(bc->alt_chains.blocks[i]);
+    }
+    free(bc->alt_chains.blocks);
+
+    /* Close database */
+    shd_database_close(bc-db);
+
+    free(bc->data_dir);
+    free(bc);
+}
+
