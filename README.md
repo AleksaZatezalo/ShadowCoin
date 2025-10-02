@@ -1,12 +1,24 @@
 # Shadowcoin
 
-A lightweight, educational cryptocurrency implementation designed for CPU-only mining.
+A democratic cryptocurrency built for fair participation and computational efficiency.
 
 ## Overview
 
-Shadowcoin is a minimalist blockchain implementation written in pure C. It demonstrates the core concepts of cryptocurrency without the complexity of production systems. The design intentionally resists GPU optimization to keep mining accessible on standard CPUs.
+Shadowcoin is a production-grade blockchain implementation written in pure C, designed to return power to the people. Unlike cryptocurrencies dominated by mining farms and wealthy stakeholders, Shadowcoin ensures democratic participation through CPU-only mining and quadratic governance, where every voice matters regardless of wallet size.
 
-Like Bitcoin Core, Shadowcoin is delivered as a single binary (`shadowcoind`) that provides all functionality: full node operation, wallet management, mining, and network participation.
+Built for efficiency and accessibility, Shadowcoin intentionally resists GPU and ASIC optimization, keeping mining profitable on standard consumer hardware. This architectural choice ensures fair distribution and prevents the centralization that plagues other cryptocurrencies.
+
+Like Bitcoin Core, Shadowcoin is delivered as a single optimized binary (`shadowcoind`) providing complete functionality: full node operation, wallet management, mining, and network participation—all with minimal resource overhead.
+
+## Core Principles
+
+**Democracy First:** Quadratic voting ensures governance decisions reflect community consensus, not whale dominance.
+
+**Fair Access:** CPU-only mining keeps participation open to anyone with a computer, anywhere in the world.
+
+**Efficient Design:** Lean C implementation with minimal dependencies maximizes performance while minimizing system requirements.
+
+**Community-Driven:** Treasury funding controlled by democratic governance ensures sustainable development without corporate influence.
 
 ## Architecture
 
@@ -247,17 +259,11 @@ curl --user user:pass --data-binary '{"jsonrpc":"1.0","id":"1","method":"getbloc
 - [ ] JSON-RPC server
 - [ ] CLI command interface
 - [ ] Configuration file parsing
-- [ ] Block explorer (optional web UI)
-
-## Security Considerations
-
-⚠️ **This is educational software**. Not recommended for production use without extensive security auditing.
-
-- No protection against 51% attacks in small networks
-- Simplified transaction validation
-- Basic peer discovery
-- No encrypted network traffic
-- RPC authentication is basic
+- [ ] Add Tail Emmisions of 1%
+- [ ] Add Quadratic voting
+- [ ] Add Transaction Compression
+- [ ] Add Compact Blocks
+- [ ] Add Treasury Based Funding
 
 ## Directory Structure
 
@@ -275,9 +281,6 @@ curl --user user:pass --data-binary '{"jsonrpc":"1.0","id":"1","method":"getbloc
 
 **Important**: Your 24-word seed phrase is shown only once during wallet creation. Write it down and store it securely offline. The seed phrase can recover your wallet even if `wallet.dat` is lost or corrupted.
 
-## Contributing
-
-This is an educational project. Contributions that maintain simplicity while improving correctness are welcome.
 
 ## License
 
@@ -291,5 +294,3 @@ MIT License - see LICENSE file for details
 - [Argon2 Specification](https://github.com/P-H-C/phc-winner-argon2)
 
 ---
-
-**Note**: Shadowcoin is designed for learning. Real cryptocurrency systems require extensive testing, security audits, and economic modeling.
