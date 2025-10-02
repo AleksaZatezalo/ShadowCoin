@@ -1,5 +1,4 @@
 /**
- * blockchain.h - ShadowCoin Blockchain Core
  * 
  * Provides blockchain data structure management and validation.
  * Implements the main chain state, block validation, and reorganization logic.
