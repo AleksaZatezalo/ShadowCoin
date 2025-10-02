@@ -1,258 +1,290 @@
-# ShadowCoin
+# Shadowcoin
 
-A privacy-focused cryptocurrency implemented in C, featuring ring signatures for transaction anonymity and an accessible mining algorithm.
+A lightweight, educational cryptocurrency implementation designed for CPU-only mining.
 
 ## Overview
 
-ShadowCoin is a decentralized digital currency that prioritizes user privacy through cryptographic ring signatures while maintaining an easy-to-mine consensus mechanism. The total supply is capped at 100 million coins.
+Shadowcoin is a minimalist blockchain implementation written in pure C. It demonstrates the core concepts of cryptocurrency without the complexity of production systems. The design intentionally resists GPU optimization to keep mining accessible on standard CPUs.
 
-## Key Features
-
-- **Ring Signature Privacy**: Transactions use ring signatures to obscure the true sender among a group of possible signers
-- **Easy Mining**: CPU-friendly proof-of-work algorithm accessible to everyday users
-- **Fixed Supply**: Hard cap of 100,000,000 coins
-- **Decentralized**: Peer-to-peer network with no central authority
-
-## Technical Specifications
-
-### Blockchain Parameters
-
-- **Total Supply**: 100,000,000 coins
-- **Block Time**: 120 seconds (2 minutes)
-- **Block Reward**: Starts at 50 coins, halves every 1,050,000 blocks (~4 years)
-- **Ring Size**: Minimum 11 decoys per transaction
-- **Difficulty Adjustment**: Every 720 blocks (~24 hours)
-
-### Privacy Features
-
-- **Ring Signatures**: Each transaction input references multiple possible sources
-- **Stealth Addresses**: One-time addresses for each transaction output
-- **Ring Confidential Transactions (RingCT)**: Hides transaction amounts
-
-### Mining Algorithm
-
-- **Algorithm**: RandomX-lite variant (CPU-optimized)
-- **Memory Requirement**: 256 MB (lower than Monero's RandomX)
-- **Target**: Optimized for commodity hardware, resistant to ASIC development
+Like Bitcoin Core, Shadowcoin is delivered as a single binary (`shadowcoind`) that provides all functionality: full node operation, wallet management, mining, and network participation.
 
 ## Architecture
+
+### Core Components
 
 ```
 shadowcoin/
 ├── src/
-│   ├── core/
-│   │   ├── blockchain.c/h      # Blockchain data structure and validation
-│   │   ├── block.c/h           # Block structure and operations
-│   │   ├── transaction.c/h     # Transaction structure and validation
-│   │   └── mempool.c/h         # Transaction pool management
+│   ├── main.c                 # Entry point and command dispatcher
+│   ├── daemon.c/h             # Node daemon and RPC server
+│   ├── blockchain/
+│   │   ├── block.c/h          # Block structure and validation
+│   │   ├── chain.c/h          # Chain management and consensus
+│   │   └── transaction.c/h    # Transaction handling
 │   ├── crypto/
-│   │   ├── ring_signature.c/h  # Ring signature implementation (Borromean/MLSAG)
-│   │   ├── stealth.c/h         # Stealth address generation
-│   │   ├── ringct.c/h          # Ring Confidential Transactions
-│   │   ├── hash.c/h            # Cryptographic hash functions
-│   │   └── keys.c/h            # Key generation and management
+│   │   ├── hash.c/h           # SHA-256 + memory-hard extension
+│   │   └── signature.c/h      # Ed25519 signatures
 │   ├── mining/
-│   │   ├── miner.c/h           # Mining logic and proof-of-work
-│   │   ├── difficulty.c/h      # Difficulty adjustment algorithm
-│   │   └── randomx_lite.c/h    # Custom PoW algorithm
+│   │   ├── miner.c/h          # CPU mining logic
+│   │   └── difficulty.c/h     # Difficulty adjustment
 │   ├── network/
-│   │   ├── p2p.c/h             # Peer-to-peer networking
-│   │   ├── protocol.c/h        # Network protocol definitions
-│   │   └── sync.c/h            # Blockchain synchronization
+│   │   ├── peer.c/h           # P2P networking
+│   │   └── protocol.c/h       # Message protocol
 │   ├── wallet/
-│   │   ├── wallet.c/h          # Wallet operations
-│   │   ├── address.c/h         # Address generation and parsing
-│   │   └── balance.c/h         # Balance calculation with ring structure
-│   ├── storage/
-│   │   ├── database.c/h        # Blockchain storage (LMDB)
-│   │   └── serialization.c/h   # Data serialization/deserialization
-│   └── util/
-│       ├── base58.c/h          # Base58 encoding for addresses
-│       ├── varint.c/h          # Variable-length integer encoding
-│       └── logger.c/h          # Logging system
-├── include/
-│   └── shadowcoin/             # Public header files
-├── tests/
-│   ├── test_ring_sig.c
-│   ├── test_blockchain.c
-│   ├── test_mining.c
-│   └── test_network.c
-├── deps/                       # External dependencies
-│   ├── libsodium/              # Cryptographic primitives
-│   └── lmdb/                   # Database backend
-├── docs/
-│   ├── WHITEPAPER.md
-│   ├── PROTOCOL.md
-│   └── API.md
-├── Makefile
-├── CMakeLists.txt
-└── README.md
+│   │   ├── wallet.c/h         # Key management
+│   │   └── balance.c/h        # UTXO tracking
+│   ├── rpc/
+│   │   ├── server.c/h         # JSON-RPC server
+│   │   └── commands.c/h       # RPC command handlers
+│   └── cli/
+│       └── parser.c/h         # Command-line interface
+├── include/                    # Public headers
+├── tests/                      # Unit tests
+└── docs/                       # Additional documentation
 ```
 
-## Core Components
+## Key Features
 
-### 1. Ring Signature System
+### CPU-Only Mining
+- Memory-hard proof-of-work algorithm (Argon2id-based)
+- Random memory access patterns defeat GPU parallelization
+- Configurable memory requirements (default: 64MB per hash)
 
-Implements **Multilayered Linkable Spontaneous Anonymous Group (MLSAG)** signatures:
+### Lightweight Design
+- Minimal dependencies (only standard C libraries + libsodium)
+- Simple binary format for blocks and transactions
+- Efficient UTXO set management
+- Target block time: 2 minutes
 
-- Allows signing on behalf of a group without revealing which member signed
-- Prevents double-spending through key image linkability
-- Configurable ring size (default: 11)
+### Core Functionality
+- Ed25519 digital signatures for transactions
+- UTXO transaction model
+- Difficulty adjustment every 144 blocks (~4.8 hours)
+- Maximum supply: 21 million coins
+- Block reward halving every 210,000 blocks
 
-### 2. Blockchain Core
-
-- **Chain validation**: Verifies proof-of-work, timestamps, and transaction validity
-- **UTXO model**: Tracks unspent transaction outputs with ring structure
-- **Reorganization handling**: Manages chain splits and resolves forks
-
-### 3. Mining System
-
-- **RandomX-lite**: Memory-hard, CPU-optimized algorithm
-- **Dynamic difficulty**: Adjusts to maintain consistent block times
-- **Solo and pool mining**: Supports both mining modes
-
-### 4. Wallet
-
-- **Hierarchical Deterministic (HD)**: Generates addresses from a seed
-- **View and spend keys**: Separate keys for viewing and spending
-- **Subaddresses**: Multiple addresses from a single seed for privacy
-
-### 5. P2P Network
-
-- **Gossip protocol**: Efficient block and transaction propagation
-- **NAT traversal**: UPnP and hole-punching support
-- **Peer discovery**: DNS seeds and peer exchange
-
-## Building from Source
-
-### Dependencies
-
-- GCC or Clang (C11 support required)
-- CMake 3.10+
-- libsodium (cryptographic library)
-- LMDB (Lightning Memory-Mapped Database)
-- OpenSSL (optional, for TLS)
-
-### Compilation
+## Building
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/shadowcoin.git
-cd shadowcoin
+# Install dependencies
+sudo apt-get install libsodium-dev
 
-# Initialize submodules
-git submodule update --init --recursive
+# Build the single binary
+make clean && make
 
-# Build
-mkdir build && cd build
-cmake ..
-make -j$(nproc)
+# This produces: ./shadowcoind
 
 # Run tests
 make test
-
-# Install
-sudo make install
 ```
 
 ## Usage
 
-### Running a Node
+The `shadowcoind` binary operates in different modes depending on the command provided.
+
+### Running as a Full Node
+
+Start the daemon to participate in the network:
 
 ```bash
-# Start the daemon
-shadowcoind --data-dir ~/.shadowcoin
+# Start node with default settings
+./shadowcoind
 
-# With custom settings
-shadowcoind --data-dir ~/.shadowcoin --p2p-port 18080 --rpc-port 18081
-```
+# Start with custom port
+./shadowcoind -port=8333
 
-### Mining
+# Start in background
+./shadowcoind -daemon
 
-```bash
-# Solo mining
-shadowcoin-miner --daemon-host 127.0.0.1 --daemon-port 18081 --threads 4
-
-# Pool mining
-shadowcoin-miner --pool-address pool.example.com:3333 --wallet-address SHDxxx...
+# Connect to specific peers
+./shadowcoind -connect=192.168.1.100:8333
 ```
 
 ### Wallet Operations
 
 ```bash
 # Create new wallet
-shadowcoin-wallet create --file ~/mywallet.dat
+./shadowcoind createwallet
+
+# Get wallet address
+./shadowcoind getaddress
 
 # Check balance
-shadowcoin-wallet balance --wallet-file ~/mywallet.dat
+./shadowcoind getbalance
 
-# Send transaction
-shadowcoin-wallet send --wallet-file ~/mywallet.dat \
-  --to SHDxxx... --amount 10.5 --ring-size 11
+# Send coins
+./shadowcoind sendtoaddress <recipient-address> <amount>
+
+# List transactions
+./shadowcoind listtransactions
 ```
 
-## Emission Schedule
+### Mining
 
-```
-Block Range          | Reward  | Total Emitted
----------------------|---------|---------------
-0 - 1,049,999        | 50.0    | 52,500,000
-1,050,000 - 2,099,999| 25.0    | 78,750,000
-2,100,000 - 3,149,999| 12.5    | 91,875,000
-3,150,000 - 4,199,999| 6.25    | 98,437,500
-4,200,000+           | 3.125   | → 100,000,000
+```bash
+# Start mining (requires running node)
+./shadowcoind setgenerate true
+
+# Mine with specific thread count
+./shadowcoind setgenerate true 4
+
+# Stop mining
+./shadowcoind setgenerate false
+
+# Get mining info
+./shadowcoind getmininginfo
 ```
 
-Final coins mined at approximately block 4,500,000 (~17 years).
+### Blockchain Queries
+
+```bash
+# Get blockchain info
+./shadowcoind getblockchaininfo
+
+# Get specific block
+./shadowcoind getblock <block-hash>
+
+# Get block by height
+./shadowcoind getblockbyhash <height>
+
+# Get transaction
+./shadowcoind gettransaction <tx-hash>
+```
+
+### Node Control
+
+```bash
+# Stop the daemon
+./shadowcoind stop
+
+# Get peer info
+./shadowcoind getpeerinfo
+
+# Get network info
+./shadowcoind getnetworkinfo
+```
+
+## Configuration
+
+Configuration file: `~/.shadowcoin/shadowcoin.conf`
+
+```conf
+# Network
+port=8333
+maxconnections=125
+
+# RPC Server
+rpcport=8332
+rpcuser=user
+rpcpassword=pass
+
+# Mining
+gen=0              # Start mining on launch (0=no, 1=yes)
+genproclimit=4     # Mining threads
+
+# Blockchain
+datadir=~/.shadowcoin/data
+txindex=1          # Maintain full transaction index
+```
+
+## Technical Details
+
+### Block Structure
+```c
+typedef struct {
+    uint32_t version;
+    uint8_t prev_hash[32];
+    uint8_t merkle_root[32];
+    uint32_t timestamp;
+    uint32_t difficulty;
+    uint32_t nonce;
+    uint32_t memory_nonce[16];  // For memory-hard PoW
+    uint32_t tx_count;
+    Transaction *transactions;
+} Block;
+```
+
+### Proof-of-Work Algorithm
+
+The mining algorithm uses a hybrid approach:
+1. Standard SHA-256(block_header || nonce)
+2. Memory expansion using Argon2id with result as seed
+3. Random memory reads (CPU cache resistant)
+4. Final hash must be below target difficulty
+
+This design makes GPU mining inefficient due to:
+- High memory bandwidth requirements
+- Random access patterns
+- Memory latency sensitivity
+
+### Transaction Format
+- UTXO-based model
+- Inputs reference previous transaction outputs
+- Outputs specify amount and recipient public key
+- Transaction fee = sum(inputs) - sum(outputs)
+
+### RPC Interface
+
+The daemon runs a JSON-RPC server for programmatic access:
+
+```bash
+# Example: Get blockchain info via RPC
+curl --user user:pass --data-binary '{"jsonrpc":"1.0","id":"1","method":"getblockchaininfo","params":[]}' \
+  http://localhost:8332/
+```
+
+## Development Roadmap
+
+- [x] Core blockchain data structures
+- [x] CPU-optimized mining algorithm
+- [ ] Single binary architecture with command routing
+- [ ] P2P network protocol
+- [ ] Wallet implementation
+- [ ] Transaction pool (mempool)
+- [ ] JSON-RPC server
+- [ ] CLI command interface
+- [ ] Configuration file parsing
+- [ ] Block explorer (optional web UI)
 
 ## Security Considerations
 
-### Privacy Guarantees
+⚠️ **This is educational software**. Not recommended for production use without extensive security auditing.
 
-- **Sender anonymity**: Ring signatures hide the true sender
-- **Receiver anonymity**: Stealth addresses prevent address reuse tracking
-- **Amount confidentiality**: RingCT hides transaction amounts
+- No protection against 51% attacks in small networks
+- Simplified transaction validation
+- Basic peer discovery
+- No encrypted network traffic
+- RPC authentication is basic
 
-### Known Limitations
+## Directory Structure
 
-- Ring signatures provide probabilistic anonymity (not absolute)
-- Timing analysis may correlate transactions
-- Network-level privacy requires Tor/I2P integration
+```
+~/.shadowcoin/
+├── shadowcoin.conf       # Configuration file
+├── wallet.dat            # Encrypted wallet
+├── peers.dat             # Known peers
+├── data/
+│   ├── blocks/           # Block data
+│   ├── chainstate/       # UTXO set
+│   └── index/            # Transaction index
+└── debug.log             # Log file
+```
 
 ## Contributing
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-### Development Guidelines
-
-- Follow Linux kernel coding style
-- Write unit tests for new features
-- Document all public APIs
-- Use valgrind to check for memory leaks
+This is an educational project. Contributions that maintain simplicity while improving correctness are welcome.
 
 ## License
 
-This project is licensed under the BSD 3-Clause License - see [LICENSE](LICENSE) for details.
-
-## Disclaimer
-
-This is experimental software. Use at your own risk. Never invest more than you can afford to lose.
+MIT License - see LICENSE file for details
 
 ## Resources
 
-- **Whitepaper**: [docs/WHITEPAPER.md](docs/WHITEPAPER.md)
-- **Protocol Specification**: [docs/PROTOCOL.md](docs/PROTOCOL.md)
-- **API Documentation**: [docs/API.md](docs/API.md)
-- **Community**: [Discord/Telegram/Forum links]
+- [Bitcoin Whitepaper](https://bitcoin.org/bitcoin.pdf)
+- [Bitcoin Core](https://github.com/bitcoin/bitcoin)
+- [Ed25519 Signatures](https://ed25519.cr.yp.to/)
+- [Argon2 Specification](https://github.com/P-H-C/phc-winner-argon2)
 
-## Acknowledgments
+---
 
-- Monero Project for ring signature inspiration
-- RandomX authors for PoW algorithm concepts
-- CryptoNote protocol designers
-
-## Contact
-
-- **Website**: https://shadowcoin.org
-- **Email**: dev@shadowcoin.org
-- **GitHub**: https://github.com/yourusername/shadowcoin
+**Note**: Shadowcoin is designed for learning. Real cryptocurrency systems require extensive testing, security audits, and economic modeling.
