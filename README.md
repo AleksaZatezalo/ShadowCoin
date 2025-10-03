@@ -60,8 +60,7 @@ Agoracoin/
 - Ed25519 digital signatures for transactions
 - UTXO transaction model
 - Difficulty adjustment every 144 blocks (~4.8 hours)
-- Maximum supply: 21 million coins
-- Block reward halving every 210,000 blocks
+- Block reward halving every 210,000 blocks & finishes with tail emmisions of 1%
 
 ## Building
 
@@ -248,10 +247,8 @@ curl --user user:pass --data-binary '{"jsonrpc":"1.0","id":"1","method":"getbloc
 - [ ] CLI command interface
 - [ ] Configuration file parsing
 - [ ] Add Tail Emmisions of 1%
-- [ ] Add Quadratic voting
 - [ ] Add Transaction Compression
 - [ ] Add Compact Blocks
-- [ ] Add Treasury Based Funding
 
 ## Directory Structure
 
