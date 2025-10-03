@@ -1,4 +1,3 @@
-0. Create makefile & install dependencies
 1. crypto/hash.c/h
    └─ Implement SHA-256
    └─ Add Argon2id wrapper
