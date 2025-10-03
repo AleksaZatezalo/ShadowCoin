@@ -4,7 +4,7 @@ A lightweight cryptocurrency implementation designed for CPU-only mining.
 
 ## Overview
 
-Simplecoin is a minimalist blockchain implementation written in pure C. It demonstrates the core concepts of cryptocurrency without the complexity of production systems. The design intentionally resists GPU optimization to keep mining accessible on standard CPUs.
+Simplecoin is a minimalist blockchain implementation written in pure C. It demonstrates the core concepts of cryptocurrency without the complexity of production systems.
 
 Like Bitcoin Core, Simplecoin is delivered as a single binary (`Simplecoind`) that provides all functionality: full node operation, wallet management, mining, and network participation.
 
@@ -44,12 +44,6 @@ Simplecoin/
 ```
 
 ## Key Features
-
-### CPU-Only Mining
-- Memory-hard proof-of-work algorithm (Argon2id-based)
-- Random memory access patterns defeat GPU parallelization
-- Configurable memory requirements (default: 64MB per hash)
-
 ### Lightweight Design
 - Minimal dependencies (only standard C libraries + libsodium)
 - Simple binary format for blocks and transactions
