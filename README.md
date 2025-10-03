@@ -1,6 +1,6 @@
 # Simplecoin
 
-A lightweight cryptocurrency implementation designed for CPU-only mining.
+A lightweight cryptocurrency implementation demonstrating blockchain fundamentals.
 
 ## Overview
 
@@ -22,10 +22,10 @@ Simplecoin/
 │   │   ├── chain.c/h          # Chain management and consensus
 │   │   └── transaction.c/h    # Transaction handling
 │   ├── crypto/
-│   │   ├── hash.c/h           # SHA-256 + memory-hard extension
+│   │   ├── hash.c/h           # SHA-256 implementation
 │   │   └── signature.c/h      # Ed25519 signatures
 │   ├── mining/
-│   │   ├── miner.c/h          # CPU mining logic
+│   │   ├── miner.c/h          # Mining logic
 │   │   └── difficulty.c/h     # Difficulty adjustment
 │   ├── network/
 │   │   ├── peer.c/h           # P2P networking
@@ -44,6 +44,7 @@ Simplecoin/
 ```
 
 ## Key Features
+
 ### Lightweight Design
 - Minimal dependencies (only standard C libraries + libsodium)
 - Simple binary format for blocks and transactions
@@ -194,7 +195,6 @@ typedef struct {
     uint32_t timestamp;
     uint32_t difficulty;
     uint32_t nonce;
-    uint32_t memory_nonce[16];  // For memory-hard PoW
     uint32_t tx_count;
     Transaction *transactions;
 } Block;
@@ -202,16 +202,12 @@ typedef struct {
 
 ### Proof-of-Work Algorithm
 
-The mining algorithm uses a hybrid approach:
-1. Standard SHA-256(block_header || nonce)
-2. Memory expansion using Argon2id with result as seed
-3. Random memory reads (CPU cache resistant)
-4. Final hash must be below target difficulty
+The mining algorithm uses double SHA-256:
 
-This design makes GPU mining inefficient due to:
-- High memory bandwidth requirements
-- Random access patterns
-- Memory latency sensitivity
+1. Construct block header with current nonce
+2. Calculate `hash = SHA-256(SHA-256(block_header))`
+3. Check if hash is below target difficulty
+4. If not, increment nonce and repeat
 
 ### Transaction Format
 - UTXO-based model
@@ -232,7 +228,7 @@ curl --user user:pass --data-binary '{"jsonrpc":"1.0","id":"1","method":"getbloc
 ## Development Roadmap
 
 - [x] Core blockchain data structures
-- [x] CPU-optimized mining algorithm
+- [x] SHA-256 based proof-of-work
 - [ ] Single binary architecture with command routing
 - [ ] P2P network protocol
 - [ ] Wallet implementation
@@ -270,6 +266,5 @@ MIT License - see LICENSE file for details
 - [Bitcoin Whitepaper](https://bitcoin.org/bitcoin.pdf)
 - [Bitcoin Core](https://github.com/bitcoin/bitcoin)
 - [Ed25519 Signatures](https://ed25519.cr.yp.to/)
-- [Argon2 Specification](https://github.com/P-H-C/phc-winner-argon2)
 
 ---
