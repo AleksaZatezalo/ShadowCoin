@@ -1,19 +1,19 @@
-# Agoracoin
+# Simplecoin
 
 A lightweight cryptocurrency implementation designed for CPU-only mining.
 
 ## Overview
 
-Agoracoin is a minimalist blockchain implementation written in pure C. It demonstrates the core concepts of cryptocurrency without the complexity of production systems. The design intentionally resists GPU optimization to keep mining accessible on standard CPUs.
+Simplecoin is a minimalist blockchain implementation written in pure C. It demonstrates the core concepts of cryptocurrency without the complexity of production systems. The design intentionally resists GPU optimization to keep mining accessible on standard CPUs.
 
-Like Bitcoin Core, Agoracoin is delivered as a single binary (`Agoracoind`) that provides all functionality: full node operation, wallet management, mining, and network participation.
+Like Bitcoin Core, Simplecoin is delivered as a single binary (`Simplecoind`) that provides all functionality: full node operation, wallet management, mining, and network participation.
 
 ## Architecture
 
 ### Core Components
 
 ```
-Agoracoin/
+Simplecoin/
 ├── src/
 │   ├── main.c                 # Entry point and command dispatcher
 │   ├── daemon.c/h             # Node daemon and RPC server
@@ -71,7 +71,7 @@ sudo apt-get install libsodium-dev
 # Build the single binary
 make clean && make
 
-# This produces: ./Agoracoind
+# This produces: ./Simplecoind
 
 # Run tests
 make test
@@ -79,7 +79,7 @@ make test
 
 ## Usage
 
-The `Agoracoind` binary operates in different modes depending on the command provided.
+The `Simplecoind` binary operates in different modes depending on the command provided.
 
 ### Running as a Full Node
 
@@ -87,88 +87,88 @@ Start the daemon to participate in the network:
 
 ```bash
 # Start node with default settings
-./Agoracoind
+./Simplecoind
 
 # Start with custom port
-./Agoracoind -port=8333
+./Simplecoind -port=8333
 
 # Start in background
-./Agoracoind -daemon
+./Simplecoind -daemon
 
 # Connect to specific peers
-./Agoracoind -connect=192.168.1.100:8333
+./Simplecoind -connect=192.168.1.100:8333
 ```
 
 ### Wallet Operations
 
 ```bash
 # Create new wallet (generates 24-word seed phrase)
-./Agoracoind createwallet
+./Simplecoind createwallet
 
 # Recover wallet from seed phrase
-./Agoracoind recoverwallet
+./Simplecoind recoverwallet
 
 # Get wallet address
-./Agoracoind getaddress
+./Simplecoind getaddress
 
 # Check balance
-./Agoracoind getbalance
+./Simplecoind getbalance
 
 # Send coins
-./Agoracoind sendtoaddress <recipient-address> <amount>
+./Simplecoind sendtoaddress <recipient-address> <amount>
 
 # List transactions
-./Agoracoind listtransactions
+./Simplecoind listtransactions
 ```
 
 ### Mining
 
 ```bash
 # Start mining (requires running node)
-./Agoracoind setgenerate true
+./Simplecoind setgenerate true
 
 # Mine with specific thread count
-./Agoracoind setgenerate true 4
+./Simplecoind setgenerate true 4
 
 # Stop mining
-./Agoracoind setgenerate false
+./Simplecoind setgenerate false
 
 # Get mining info
-./Agoracoind getmininginfo
+./Simplecoind getmininginfo
 ```
 
 ### Blockchain Queries
 
 ```bash
 # Get blockchain info
-./Agoracoind getblockchaininfo
+./Simplecoind getblockchaininfo
 
 # Get specific block
-./Agoracoind getblock <block-hash>
+./Simplecoind getblock <block-hash>
 
 # Get block by height
-./Agoracoind getblockbyhash <height>
+./Simplecoind getblockbyhash <height>
 
 # Get transaction
-./Agoracoind gettransaction <tx-hash>
+./Simplecoind gettransaction <tx-hash>
 ```
 
 ### Node Control
 
 ```bash
 # Stop the daemon
-./Agoracoind stop
+./Simplecoind stop
 
 # Get peer info
-./Agoracoind getpeerinfo
+./Simplecoind getpeerinfo
 
 # Get network info
-./Agoracoind getnetworkinfo
+./Simplecoind getnetworkinfo
 ```
 
 ## Configuration
 
-Configuration file: `~/.Agoracoin/Agoracoin.conf`
+Configuration file: `~/.Simplecoin/Simplecoin.conf`
 
 ```conf
 # Network
@@ -185,7 +185,7 @@ gen=0              # Start mining on launch (0=no, 1=yes)
 genproclimit=4     # Mining threads
 
 # Blockchain
-datadir=~/.Agoracoin/data
+datadir=~/.Simplecoin/data
 txindex=1          # Maintain full transaction index
 ```
 
@@ -253,8 +253,8 @@ curl --user user:pass --data-binary '{"jsonrpc":"1.0","id":"1","method":"getbloc
 ## Directory Structure
 
 ```
-~/.Agoracoin/
-├── Agoracoin.conf       # Configuration file
+~/.Simplecoin/
+├── Simplecoin.conf       # Configuration file
 ├── wallet.dat            # Encrypted wallet (derived from seed)
 ├── peers.dat             # Known peers
 ├── data/
