@@ -41,7 +41,7 @@
    └─ Target to bits conversion
    └─ Write unit tests
 9. mining/miner.c/h
-   └─ Proof-of-work implementation (Shadowhash)
+   └─ Proof-of-work implementation (Agorahash)
    └─ Block template creation
    └─ Nonce iteration
    └─ Multi-threaded mining
